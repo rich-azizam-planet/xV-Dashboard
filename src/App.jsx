@@ -1,0 +1,148 @@
+import { useState } from 'react'
+import { useInitiatives } from './hooks/useInitiatives'
+import PortfolioOverview from './components/PortfolioOverview'
+import InitiativeCard from './components/InitiativeCard'
+import InitiativeForm from './components/InitiativeForm'
+import { Plus, LayoutDashboard, List } from 'lucide-react'
+
+function Modal({ children, onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div
+        className="relative z-10 h-full w-full max-w-lg bg-[#0f0f13] border-l border-white/8 overflow-y-auto p-6"
+        onClick={e => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export default function App() {
+  const { initiatives, addInitiative, updateInitiative, deleteInitiative } = useInitiatives()
+  const [view, setView] = useState('overview')
+  const [modal, setModal] = useState(null)
+
+  function handleSave(data) {
+    if (modal?.initiative) {
+      updateInitiative(modal.initiative.id, data)
+    } else {
+      addInitiative(data)
+    }
+    setModal(null)
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0f0f13]">
+      <header className="border-b border-white/8 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0f0f13]/90 backdrop-blur-sm z-40">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <span className="text-white font-bold text-xs">xV</span>
+          </div>
+          <div>
+            <h1 className="text-white font-semibold text-sm leading-none">Expected Value Dashboard</h1>
+            <p className="text-gray-500 text-xs mt-0.5">Simon Hill's xV Framework</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-white/8 p-0.5 bg-white/5">
+            <button
+              onClick={() => setView('overview')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                view === 'overview' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <LayoutDashboard size={13} />
+              Overview
+            </button>
+            <button
+              onClick={() => setView('initiatives')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                view === 'initiatives' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <List size={13} />
+              Initiatives
+            </button>
+          </div>
+          <button
+            onClick={() => setModal('new')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors"
+          >
+            <Plus size={14} />
+            Add Initiative
+          </button>
+        </div>
+      </header>
+
+      <main className="flex-1 px-6 py-6 max-w-5xl mx-auto w-full">
+        {view === 'overview' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-white">Portfolio Overview</h2>
+              <p className="text-gray-500 text-sm mt-1">
+                xV = Confidence × Predicted Value × Time Sensitivity × Strategic Fit
+              </p>
+            </div>
+            {initiatives.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/12 p-12 text-center">
+                <p className="text-gray-500 text-sm">No initiatives yet.</p>
+                <button
+                  onClick={() => setModal('new')}
+                  className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
+                >
+                  Add your first initiative
+                </button>
+              </div>
+            ) : (
+              <PortfolioOverview initiatives={initiatives} />
+            )}
+          </div>
+        )}
+
+        {view === 'initiatives' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-white">Initiatives</h2>
+              <p className="text-gray-500 text-sm mt-1">{initiatives.length} in portfolio</p>
+            </div>
+            {initiatives.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/12 p-12 text-center">
+                <p className="text-gray-500 text-sm">No initiatives yet.</p>
+                <button
+                  onClick={() => setModal('new')}
+                  className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
+                >
+                  Add your first initiative
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {initiatives.map(i => (
+                  <InitiativeCard
+                    key={i.id}
+                    initiative={i}
+                    onClick={() => setModal({ initiative: i })}
+                    onDelete={deleteInitiative}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {modal && (
+        <Modal onClose={() => setModal(null)}>
+          <InitiativeForm
+            initial={modal?.initiative || null}
+            onSave={handleSave}
+            onCancel={() => setModal(null)}
+          />
+        </Modal>
+      )}
+    </div>
+  )
+}
