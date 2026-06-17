@@ -67,7 +67,7 @@ export default function InitiativeCard({ initiative, onClick, onDelete }) {
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">Time</p>
-          <p className="text-lg font-semibold text-white">{initiative.timeSensitivity.toFixed(1)}×</p>
+          <p className="text-lg font-semibold text-white">{(initiative.timeSensitivity ?? 1.0).toFixed(1)}×</p>
         </div>
       </div>
 

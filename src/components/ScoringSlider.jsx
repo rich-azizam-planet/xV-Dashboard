@@ -1,6 +1,7 @@
 export default function ScoringSlider({ label, value, min = 0, max = 1, step = 0.1, onChange, description }) {
-  const pct = ((value - min) / (max - min)) * 100
-  const color = value >= 0.6 * max ? '#6366f1' : value >= 0.3 * max ? '#8b5cf6' : '#475569'
+  const range = max - min || 1
+  const pct = Math.min(100, Math.max(0, ((value - min) / range) * 100))
+  const color = pct >= 60 ? '#6366f1' : pct >= 30 ? '#8b5cf6' : '#475569'
 
   return (
     <div className="space-y-1.5">

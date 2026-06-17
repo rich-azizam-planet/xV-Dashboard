@@ -128,7 +128,8 @@ export const SEED_INITIATIVES = [
 ]
 
 export function calcConfidence(dims) {
-  const vals = Object.values(dims)
+  const vals = Object.values(dims).filter(v => typeof v === 'number' && isFinite(v))
+  if (!vals.length) return 0
   return vals.reduce((a, b) => a + b, 0) / vals.length
 }
 
@@ -137,10 +138,11 @@ export function calcStrategicFit(dims) {
 }
 
 export function calcXV(initiative) {
-  const confidence = calcConfidence(initiative.confidence)
-  const value = VALUE_TIER_MIDPOINTS[initiative.predictedValueTier] / 1000000
-  const strategicFit = calcStrategicFit(initiative.strategicFit)
-  return confidence * value * initiative.timeSensitivity * strategicFit
+  const confidence = calcConfidence(initiative.confidence ?? {})
+  const value = (VALUE_TIER_MIDPOINTS[initiative.predictedValueTier] ?? 0) / 1000000
+  const timeSensitivity = initiative.timeSensitivity ?? 1.0
+  const strategicFit = calcStrategicFit(initiative.strategicFit ?? {})
+  return confidence * value * timeSensitivity * strategicFit
 }
 
 export function formatXV(xv) {

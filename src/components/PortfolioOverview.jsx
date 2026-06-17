@@ -37,14 +37,13 @@ function XVBar({ initiative }) {
 export default function PortfolioOverview({ initiatives }) {
   if (!initiatives.length) return null
 
-  const xvScores = initiatives.map(calcXV)
-  const totalXV = xvScores.reduce((a, b) => a + b, 0)
-  const avgXV = totalXV / initiatives.length
-  const avgConf = initiatives.reduce((a, i) => a + calcConfidence(i.confidence), 0) / initiatives.length
+  const scored = initiatives.map(i => ({ initiative: i, xv: calcXV(i) }))
+  const totalXV = scored.reduce((a, s) => a + s.xv, 0)
+  const avgConf = initiatives.reduce((a, i) => a + calcConfidence(i.confidence ?? {}), 0) / initiatives.length
   const totalInvestment = initiatives.reduce((a, i) => a + (i.investment || 0), 0)
   const costPerXV = totalInvestment && totalXV ? (totalInvestment / 1000000) / totalXV : null
 
-  const sorted = [...initiatives].sort((a, b) => calcXV(b) - calcXV(a))
+  const sorted = [...scored].sort((a, b) => b.xv - a.xv)
 
   return (
     <div className="space-y-6">
@@ -62,7 +61,7 @@ export default function PortfolioOverview({ initiatives }) {
 
       <div className="rounded-2xl bg-white/5 border border-white/8 p-5">
         <h3 className="text-xs text-gray-400 uppercase tracking-widest font-medium mb-4">Portfolio Ranking by xV</h3>
-        {sorted.map(i => <XVBar key={i.id} initiative={i} />)}
+        {sorted.map(({ initiative: i }) => <XVBar key={i.id} initiative={i} />)}
       </div>
     </div>
   )

@@ -3,7 +3,21 @@ import { useInitiatives } from './hooks/useInitiatives'
 import PortfolioOverview from './components/PortfolioOverview'
 import InitiativeCard from './components/InitiativeCard'
 import InitiativeForm from './components/InitiativeForm'
-import { Plus, LayoutDashboard, List } from 'lucide-react'
+import { Plus, LayoutDashboard, List, AlertTriangle } from 'lucide-react'
+
+function EmptyState({ onAdd }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-white/12 p-12 text-center">
+      <p className="text-gray-500 text-sm">No initiatives yet.</p>
+      <button
+        onClick={onAdd}
+        className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
+      >
+        Add your first initiative
+      </button>
+    </div>
+  )
+}
 
 function Modal({ children, onClose }) {
   return (
@@ -23,14 +37,20 @@ export default function App() {
   const { initiatives, addInitiative, updateInitiative, deleteInitiative } = useInitiatives()
   const [view, setView] = useState('overview')
   const [modal, setModal] = useState(null)
+  const [saveError, setSaveError] = useState(false)
 
   function handleSave(data) {
-    if (modal?.initiative) {
-      updateInitiative(modal.initiative.id, data)
-    } else {
-      addInitiative(data)
+    try {
+      if (modal?.initiative) {
+        updateInitiative(modal.initiative.id, data)
+      } else {
+        addInitiative(data)
+      }
+      setModal(null)
+      setSaveError(false)
+    } catch {
+      setSaveError(true)
     }
-    setModal(null)
   }
 
   return (
@@ -78,6 +98,14 @@ export default function App() {
       </header>
 
       <main className="flex-1 px-6 py-6 max-w-5xl mx-auto w-full">
+        {saveError && (
+          <div className="mb-4 flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <AlertTriangle size={16} className="shrink-0" />
+            Storage quota exceeded — your changes could not be saved. Try deleting unused initiatives to free space.
+            <button onClick={() => setSaveError(false)} className="ml-auto text-red-400/60 hover:text-red-400">✕</button>
+          </div>
+        )}
+
         {view === 'overview' && (
           <div className="space-y-6">
             <div>
@@ -86,19 +114,10 @@ export default function App() {
                 xV = Confidence × Predicted Value × Time Sensitivity × Strategic Fit
               </p>
             </div>
-            {initiatives.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/12 p-12 text-center">
-                <p className="text-gray-500 text-sm">No initiatives yet.</p>
-                <button
-                  onClick={() => setModal('new')}
-                  className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
-                >
-                  Add your first initiative
-                </button>
-              </div>
-            ) : (
-              <PortfolioOverview initiatives={initiatives} />
-            )}
+            {initiatives.length === 0
+              ? <EmptyState onAdd={() => setModal('new')} />
+              : <PortfolioOverview initiatives={initiatives} />
+            }
           </div>
         )}
 
@@ -109,15 +128,7 @@ export default function App() {
               <p className="text-gray-500 text-sm mt-1">{initiatives.length} in portfolio</p>
             </div>
             {initiatives.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/12 p-12 text-center">
-                <p className="text-gray-500 text-sm">No initiatives yet.</p>
-                <button
-                  onClick={() => setModal('new')}
-                  className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
-                >
-                  Add your first initiative
-                </button>
-              </div>
+              <EmptyState onAdd={() => setModal('new')} />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {initiatives.map(i => (

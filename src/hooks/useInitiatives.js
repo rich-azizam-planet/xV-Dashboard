@@ -6,14 +6,23 @@ const STORAGE_KEY = 'xv_initiatives'
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : SEED_INITIATIVES
+    if (!raw) return SEED_INITIATIVES
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : SEED_INITIATIVES
   } catch {
     return SEED_INITIATIVES
   }
 }
 
 function save(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+      console.error('xV Dashboard: localStorage quota exceeded — changes not saved.')
+      throw e
+    }
+  }
 }
 
 export function useInitiatives() {

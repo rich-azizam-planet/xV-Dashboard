@@ -91,7 +91,8 @@ export default function InitiativeForm({ initial, onSave, onCancel }) {
   function handleSubmit(e) {
     e.preventDefault()
     if (!form.name.trim()) return
-    onSave({ ...form, investment: parseFloat(form.investment) || 0 })
+    const investment = Math.max(0, Math.min(999999999, parseFloat(form.investment) || 0))
+    onSave({ ...form, investment })
   }
 
   return (
@@ -149,6 +150,8 @@ export default function InitiativeForm({ initial, onSave, onCancel }) {
             <label className="block text-xs text-gray-400 mb-1.5">Investment ($)</label>
             <input
               type="number"
+              min="0"
+              max="999999999"
               value={form.investment}
               onChange={e => set('investment', e.target.value)}
               placeholder="e.g. 250000"
