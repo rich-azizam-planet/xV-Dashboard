@@ -46,6 +46,12 @@ export const CONFIDENCE_DIMENSIONS = [
   { key: 'regulatoryCompliance', label: 'Regulatory Compliance' },
 ]
 
+const EMPTY_CONFIDENCE_EVIDENCE = () =>
+  Object.fromEntries(CONFIDENCE_DIMENSIONS.map(d => [d.key, '']))
+
+const EMPTY_STRATEGIC_FIT_EVIDENCE = () =>
+  Object.fromEntries(STRATEGIC_FIT_DIMENSIONS.map(d => [d.key, '']))
+
 export const SEED_INITIATIVES = [
   {
     id: '1',
@@ -62,15 +68,30 @@ export const SEED_INITIATIVES = [
       implementationReadiness: 0.2,
       regulatoryCompliance: 0.1,
     },
+    confidenceEvidence: {
+      technicalFeasibility: 'API prototype tested in sandbox. 3rd party SDK evaluation complete.',
+      userDesirability: '8 user interviews conducted. Pain point validated.',
+      marketViability: '',
+      operationalDelivery: '',
+      implementationReadiness: '',
+      regulatoryCompliance: '',
+    },
     predictedValueTier: 'Large',
+    assumptions: 'Assumes regulatory approval within 6 months. Value estimate based on 3% market penetration.',
     timeSensitivity: 1.2,
+    timeSensitivityEvidence: 'Competitor launched similar product in Q4. Window to capture early adopters closing.',
     strategicFit: {
       highValueProblem: 0.3,
       companyAdvantage: 0.2,
       marketAttractiveness: 0.3,
       trendAlignment: 0.2,
     },
-    assumptions: 'Assumes regulatory approval within 6 months. Value estimate based on 3% market penetration.',
+    strategicFitEvidence: {
+      highValueProblem: 'Manual card management costs ops team ~15hrs/week. Flagged in 2025 ops review.',
+      companyAdvantage: '',
+      marketAttractiveness: '',
+      trendAlignment: '',
+    },
     createdAt: '2026-01-15',
   },
   {
@@ -88,15 +109,18 @@ export const SEED_INITIATIVES = [
       implementationReadiness: 0.1,
       regulatoryCompliance: 0.2,
     },
+    confidenceEvidence: EMPTY_CONFIDENCE_EVIDENCE(),
     predictedValueTier: 'Medium',
+    assumptions: 'Assumes LLM API costs stay below $0.01/query. Targets 500 HR queries/day.',
     timeSensitivity: 1.1,
+    timeSensitivityEvidence: '',
     strategicFit: {
       highValueProblem: 0.2,
       companyAdvantage: 0.2,
       marketAttractiveness: 0.2,
       trendAlignment: 0.3,
     },
-    assumptions: 'Assumes LLM API costs stay below $0.01/query. Targets 500 HR queries/day.',
+    strategicFitEvidence: EMPTY_STRATEGIC_FIT_EVIDENCE(),
     createdAt: '2026-02-01',
   },
   {
@@ -114,15 +138,18 @@ export const SEED_INITIATIVES = [
       implementationReadiness: 0.1,
       regulatoryCompliance: 0.1,
     },
+    confidenceEvidence: EMPTY_CONFIDENCE_EVIDENCE(),
     predictedValueTier: 'Medium',
+    assumptions: 'Win-rate improvement of 5-8% based on competitor benchmarks. Assumes integration with CRM.',
     timeSensitivity: 1.3,
+    timeSensitivityEvidence: '',
     strategicFit: {
       highValueProblem: 0.3,
       companyAdvantage: 0.3,
       marketAttractiveness: 0.2,
       trendAlignment: 0.2,
     },
-    assumptions: 'Win-rate improvement of 5-8% based on competitor benchmarks. Assumes integration with CRM.',
+    strategicFitEvidence: EMPTY_STRATEGIC_FIT_EVIDENCE(),
     createdAt: '2026-02-20',
   },
 ]

@@ -3,6 +3,7 @@ import { useInitiatives } from './hooks/useInitiatives'
 import PortfolioOverview from './components/PortfolioOverview'
 import InitiativeCard from './components/InitiativeCard'
 import InitiativeForm from './components/InitiativeForm'
+import InitiativeEdit from './components/InitiativeEdit'
 import { Plus, LayoutDashboard, List, AlertTriangle } from 'lucide-react'
 
 function EmptyState({ onAdd }) {
@@ -37,7 +38,10 @@ export default function App() {
   const { initiatives, addInitiative, updateInitiative, deleteInitiative } = useInitiatives()
   const [view, setView] = useState('overview')
   const [modal, setModal] = useState(null)
+  const [editingId, setEditingId] = useState(null)
   const [saveError, setSaveError] = useState(false)
+
+  const editingInitiative = editingId ? initiatives.find(i => i.id === editingId) : null
 
   function handleSave(data) {
     try {
@@ -51,6 +55,26 @@ export default function App() {
     } catch {
       setSaveError(true)
     }
+  }
+
+  function handleEditSave(data) {
+    try {
+      updateInitiative(editingId, data)
+      setEditingId(null)
+      setSaveError(false)
+    } catch {
+      setSaveError(true)
+    }
+  }
+
+  if (editingInitiative) {
+    return (
+      <InitiativeEdit
+        initiative={editingInitiative}
+        onSave={handleEditSave}
+        onCancel={() => setEditingId(null)}
+      />
+    )
   }
 
   return (
@@ -135,7 +159,7 @@ export default function App() {
                   <InitiativeCard
                     key={i.id}
                     initiative={i}
-                    onClick={() => setModal({ initiative: i })}
+                    onClick={() => setEditingId(i.id)}
                     onDelete={deleteInitiative}
                   />
                 ))}

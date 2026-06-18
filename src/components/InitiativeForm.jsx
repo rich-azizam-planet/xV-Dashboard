@@ -20,10 +20,13 @@ const EMPTY = {
   stage: 'Discovery',
   investment: '',
   confidence: Object.fromEntries(CONFIDENCE_DIMENSIONS.map(d => [d.key, 0.1])),
+  confidenceEvidence: Object.fromEntries(CONFIDENCE_DIMENSIONS.map(d => [d.key, ''])),
   predictedValueTier: 'Medium',
-  timeSensitivity: 1.0,
-  strategicFit: Object.fromEntries(STRATEGIC_FIT_DIMENSIONS.map(d => [d.key, 0.1])),
   assumptions: '',
+  timeSensitivity: 1.0,
+  timeSensitivityEvidence: '',
+  strategicFit: Object.fromEntries(STRATEGIC_FIT_DIMENSIONS.map(d => [d.key, 0.1])),
+  strategicFitEvidence: Object.fromEntries(STRATEGIC_FIT_DIMENSIONS.map(d => [d.key, ''])),
 }
 
 function Section({ title, children, defaultOpen = true }) {
