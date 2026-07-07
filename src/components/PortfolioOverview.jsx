@@ -1,4 +1,4 @@
-import { calcXV, calcConfidence, calcStrategicFit, formatXV } from '../data/initiatives'
+import { calcXV, calcConfidence, calcStrategicFit, formatXV, formatCurrency } from '../data/initiatives'
 
 function StatCard({ label, value, sub, accent }) {
   return (
@@ -27,8 +27,8 @@ function XVBar({ initiative }) {
         />
       </div>
       <div className="w-16 text-right text-xs text-gray-400">{(confidence * 100).toFixed(0)}% conf</div>
-      <div className="w-20 text-right text-sm font-mono font-semibold text-indigo-300">
-        {formatXV(xv)} xV
+      <div className="w-24 text-right text-sm font-mono font-semibold text-indigo-300">
+        {formatXV(xv)}
       </div>
     </div>
   )
@@ -41,7 +41,7 @@ export default function PortfolioOverview({ initiatives }) {
   const totalXV = scored.reduce((a, s) => a + s.xv, 0)
   const avgConf = initiatives.reduce((a, i) => a + calcConfidence(i.confidence ?? {}), 0) / initiatives.length
   const totalInvestment = initiatives.reduce((a, i) => a + (i.investment || 0), 0)
-  const costPerXV = totalInvestment && totalXV ? (totalInvestment / 1000000) / totalXV : null
+  const roiMultiple = totalInvestment && totalXV ? totalXV / totalInvestment : null
 
   const sorted = [...scored].sort((a, b) => b.xv - a.xv)
 
@@ -49,12 +49,12 @@ export default function PortfolioOverview({ initiatives }) {
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Initiatives" value={initiatives.length} sub="in portfolio" />
-        <StatCard label="Total xV" value={formatXV(totalXV)} sub="expected value score" accent="text-indigo-300" />
+        <StatCard label="Total xV" value={formatXV(totalXV)} sub="expected value" accent="text-indigo-300" />
         <StatCard label="Avg Confidence" value={`${(avgConf * 100).toFixed(0)}%`} sub="across all initiatives" accent={avgConf >= 0.5 ? 'text-emerald-400' : 'text-amber-400'} />
         <StatCard
-          label="Cost / xV"
-          value={costPerXV ? `$${costPerXV.toFixed(2)}m` : '—'}
-          sub="investment efficiency"
+          label="xV / Investment"
+          value={roiMultiple ? `${roiMultiple.toFixed(1)}×` : '—'}
+          sub="expected return multiple"
           accent="text-sky-400"
         />
       </div>

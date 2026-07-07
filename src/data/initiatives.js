@@ -77,6 +77,7 @@ export const SEED_INITIATIVES = [
       regulatoryCompliance: '',
     },
     predictedValueTier: 'Large',
+    predictedValue: 50000000,
     assumptions: 'Assumes regulatory approval within 6 months. Value estimate based on 3% market penetration.',
     timeSensitivity: 1.2,
     timeSensitivityEvidence: 'Competitor launched similar product in Q4. Window to capture early adopters closing.',
@@ -111,6 +112,7 @@ export const SEED_INITIATIVES = [
     },
     confidenceEvidence: EMPTY_CONFIDENCE_EVIDENCE(),
     predictedValueTier: 'Medium',
+    predictedValue: 5000000,
     assumptions: 'Assumes LLM API costs stay below $0.01/query. Targets 500 HR queries/day.',
     timeSensitivity: 1.1,
     timeSensitivityEvidence: '',
@@ -140,6 +142,7 @@ export const SEED_INITIATIVES = [
     },
     confidenceEvidence: EMPTY_CONFIDENCE_EVIDENCE(),
     predictedValueTier: 'Medium',
+    predictedValue: 5000000,
     assumptions: 'Win-rate improvement of 5-8% based on competitor benchmarks. Assumes integration with CRM.',
     timeSensitivity: 1.3,
     timeSensitivityEvidence: '',
@@ -166,20 +169,32 @@ export function calcStrategicFit(dims) {
 
 export function calcXV(initiative) {
   const confidence = calcConfidence(initiative.confidence ?? {})
-  const value = (VALUE_TIER_MIDPOINTS[initiative.predictedValueTier] ?? 0) / 1000000
+  const value = (initiative.predictedValue !== '' && initiative.predictedValue != null)
+    ? Number(initiative.predictedValue)
+    : (VALUE_TIER_MIDPOINTS[initiative.predictedValueTier] ?? 0)
   const timeSensitivity = initiative.timeSensitivity ?? 1.0
   const strategicFit = calcStrategicFit(initiative.strategicFit ?? {})
   return confidence * value * timeSensitivity * strategicFit
 }
 
 export function formatXV(xv) {
-  if (xv >= 1000) return `${(xv / 1000).toFixed(1)}k`
-  if (xv >= 1) return xv.toFixed(1)
-  return xv.toFixed(2)
+  if (!isFinite(xv) || isNaN(xv)) return '$—'
+  if (xv >= 1e9) return `$${(xv / 1e9).toFixed(1)}b`
+  if (xv >= 1e6) return `$${(xv / 1e6).toFixed(1)}m`
+  if (xv >= 1e3) return `$${(xv / 1e3).toFixed(0)}k`
+  return `$${xv.toFixed(0)}`
+}
+
+export function formatCurrency(val) {
+  if (!val || !isFinite(val)) return '—'
+  if (val >= 1e9) return `$${(val / 1e9).toFixed(1)}b`
+  if (val >= 1e6) return `$${(val / 1e6).toFixed(1)}m`
+  if (val >= 1e3) return `$${(val / 1e3).toFixed(0)}k`
+  return `$${val.toFixed(0)}`
 }
 
 export function calcEfficiencyRatio(initiative) {
   const xv = calcXV(initiative)
   if (!initiative.investment || xv === 0) return null
-  return (initiative.investment / 1000000) / xv
+  return xv / initiative.investment
 }

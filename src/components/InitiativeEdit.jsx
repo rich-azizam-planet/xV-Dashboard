@@ -121,7 +121,7 @@ export default function InitiativeEdit({ initiative, onSave, onCancel }) {
       <div className="border-b border-white/6 bg-indigo-950/30 px-6 py-3 flex items-center gap-6">
         {[
           { label: 'Confidence', value: `${(confidence * 100).toFixed(0)}%` },
-          { label: 'Value tier', value: form.predictedValueTier },
+          { label: 'Predicted value', value: form.predictedValue ? `$${Number(form.predictedValue).toLocaleString()}` : form.predictedValueTier },
           { label: 'Time ×', value: (form.timeSensitivity ?? 1.0).toFixed(1) },
           { label: 'Strategic fit', value: sf.toFixed(2) },
         ].map((m, i) => (
@@ -138,7 +138,7 @@ export default function InitiativeEdit({ initiative, onSave, onCancel }) {
           <p className="text-sm font-semibold text-indigo-300">{formatXV(xv)}</p>
         </div>
         <p className="ml-auto text-xs font-mono text-gray-600 hidden lg:block">
-          xV = {confidence.toFixed(2)} × {form.predictedValueTier} × {(form.timeSensitivity ?? 1.0).toFixed(1)} × {sf.toFixed(2)}
+          xV = {confidence.toFixed(2)} × {form.predictedValue ? `$${Number(form.predictedValue).toLocaleString()}` : form.predictedValueTier} × {(form.timeSensitivity ?? 1.0).toFixed(1)} × {sf.toFixed(2)}
         </p>
       </div>
 
@@ -183,6 +183,19 @@ export default function InitiativeEdit({ initiative, onSave, onCancel }) {
                     <p className="text-xs text-gray-500">{t.range}</p>
                   </button>
                 ))}
+              </div>
+              <div className="mb-4">
+                <label className="block text-xs text-gray-500 mb-1.5">Predicted value ($)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="999999999999"
+                  value={form.predictedValue ?? ''}
+                  onChange={e => set('predictedValue', e.target.value === '' ? undefined : parseFloat(e.target.value))}
+                  placeholder="e.g. 50000000"
+                  className="w-full rounded-lg bg-white/4 border border-white/8 px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-colors"
+                />
+                <p className="text-xs text-gray-700 mt-1">Specific dollar estimate — overrides the tier midpoint</p>
               </div>
               <label className="block text-xs text-gray-500 mb-1.5">Key assumptions &amp; evidence</label>
               <textarea

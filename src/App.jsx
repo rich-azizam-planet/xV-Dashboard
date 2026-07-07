@@ -86,7 +86,6 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-white font-semibold text-sm leading-none">Expected Value Dashboard</h1>
-            <p className="text-gray-500 text-xs mt-0.5">Simon Hill's xV Framework</p>
           </div>
         </div>
 

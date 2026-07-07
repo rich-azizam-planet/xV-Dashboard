@@ -22,6 +22,7 @@ const EMPTY = {
   confidence: Object.fromEntries(CONFIDENCE_DIMENSIONS.map(d => [d.key, 0.1])),
   confidenceEvidence: Object.fromEntries(CONFIDENCE_DIMENSIONS.map(d => [d.key, ''])),
   predictedValueTier: 'Medium',
+  predictedValue: '',
   assumptions: '',
   timeSensitivity: 1.0,
   timeSensitivityEvidence: '',
@@ -74,7 +75,7 @@ function XVPreview({ form }) {
         </div>
       </div>
       <p className="text-xs text-gray-600 mt-3 text-center font-mono">
-        xV = {(conf).toFixed(2)} × {form.predictedValueTier} × {preview.timeSensitivity.toFixed(1)} × {sf.toFixed(2)}
+        xV = {conf.toFixed(2)} × {preview.predictedValue ? `$${Number(preview.predictedValue).toLocaleString()}` : form.predictedValueTier} × {preview.timeSensitivity.toFixed(1)} × {sf.toFixed(2)}
       </p>
     </div>
   )
@@ -197,6 +198,19 @@ export default function InitiativeForm({ initial, onSave, onCancel }) {
               <p className="text-xs text-gray-500">{t.range}</p>
             </button>
           ))}
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1.5">Predicted Value ($)</label>
+          <input
+            type="number"
+            min="0"
+            max="999999999999"
+            value={form.predictedValue}
+            onChange={e => set('predictedValue', e.target.value === '' ? '' : parseFloat(e.target.value))}
+            placeholder="e.g. 50000000"
+            className="w-full rounded-lg bg-white/8 border border-white/12 px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-colors"
+          />
+          <p className="text-xs text-gray-600 mt-1">Specific dollar estimate — overrides the tier midpoint in the xV calculation</p>
         </div>
         <div>
           <label className="block text-xs text-gray-400 mb-1.5">Key Assumptions</label>
