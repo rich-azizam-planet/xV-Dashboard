@@ -4,7 +4,9 @@ import PortfolioOverview from './components/PortfolioOverview'
 import InitiativeCard from './components/InitiativeCard'
 import InitiativeForm from './components/InitiativeForm'
 import InitiativeEdit from './components/InitiativeEdit'
-import { Plus, LayoutDashboard, List, AlertTriangle } from 'lucide-react'
+import SCurveView from './components/SCurveView'
+import ReferenceView from './components/ReferenceView'
+import { Plus, LayoutDashboard, List, TrendingUp, BookOpen, AlertTriangle } from 'lucide-react'
 
 function EmptyState({ onAdd }) {
   return (
@@ -109,6 +111,24 @@ export default function App() {
               <List size={13} />
               Initiatives
             </button>
+            <button
+              onClick={() => setView('scurve')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                view === 'scurve' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <TrendingUp size={13} />
+              S-Curve
+            </button>
+            <button
+              onClick={() => setView('reference')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                view === 'reference' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <BookOpen size={13} />
+              Guide
+            </button>
           </div>
           <button
             onClick={() => setModal('new')}
@@ -165,6 +185,14 @@ export default function App() {
               </div>
             )}
           </div>
+        )}
+
+        {view === 'scurve' && (
+          <SCurveView initiatives={initiatives} onEdit={id => setEditingId(id)} />
+        )}
+
+        {view === 'reference' && (
+          <ReferenceView />
         )}
       </main>
 
